@@ -749,11 +749,17 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   interactionOptions: const InteractionOptions(flags: 0),
                 ),
                 children: [
-                  TileLayer(
-                    urlTemplate:
-                        'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-                    subdomains: const ['a', 'b', 'c', 'd'],
-                    userAgentPackageName: 'com.example.madeals',
+                  ColorFiltered(
+                    colorFilter: const ColorFilter.matrix(<double>[
+                      0.464, 0.378, 0.038, 0, 28, // R: desaturate + lift
+                      0.112, 0.703, 0.038, 0, 28, // G
+                      0.112, 0.378, 0.399, 0, 28, // B
+                      0, 0, 0, 1, 0, // A
+                    ]),
+                    child: TileLayer(
+                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'com.example.madeals',
+                    ),
                   ),
                   MarkerLayer(
                     markers: [

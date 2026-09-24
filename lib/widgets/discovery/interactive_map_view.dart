@@ -212,11 +212,19 @@ class _InteractiveMapViewState extends State<InteractiveMapView> {
               initialZoom: 12.5,
             ),
             children: [
-              TileLayer(
-                urlTemplate:
-                    'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-                subdomains: const ['a', 'b', 'c', 'd'],
-                userAgentPackageName: 'com.example.madeals',
+              // Free OSM tiles, color-filtered to the light-silver
+              // MADEALS palette (#F5F5F5) — no API key required.
+              ColorFiltered(
+                colorFilter: const ColorFilter.matrix(<double>[
+                  0.464, 0.378, 0.038, 0, 28, // R: desaturate + lift
+                  0.112, 0.703, 0.038, 0, 28, // G
+                  0.112, 0.378, 0.399, 0, 28, // B
+                  0, 0, 0, 1, 0, // A
+                ]),
+                child: TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.example.madeals',
+                ),
               ),
               MarkerLayer(
                 markers: widget.listings
@@ -234,7 +242,7 @@ class _InteractiveMapViewState extends State<InteractiveMapView> {
               const RichAttributionWidget(
                 attributions: [
                   TextSourceAttribution(
-                    '© OpenStreetMap contributors © CARTO',
+                    '© OpenStreetMap contributors',
                   ),
                 ],
               ),
