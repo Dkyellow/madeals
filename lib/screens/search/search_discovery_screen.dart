@@ -194,7 +194,14 @@ class _SearchDiscoveryScreenState extends ConsumerState<SearchDiscoveryScreen> {
     final header = _FloatingHeader(
       searchController: _searchController,
       isMapView: isMapView,
-      onBack: () => context.pop(),
+      onBack: () {
+        // Tab route may have no stack to pop (bottom-nav navigation).
+        if (context.canPop()) {
+          context.pop();
+        } else {
+          context.go('/');
+        }
+      },
       onSearchChanged: (val) {
         ref.read(searchQueryProvider.notifier).state = val;
       },
