@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/animations/micro_interactions.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../models/listing_item.dart';
@@ -19,8 +20,9 @@ class ListingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return TapScale(
       onTap: onTap,
+      haptic: true,
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -40,11 +42,15 @@ class ListingCard extends StatelessWidget {
             // Image Stack
             Stack(
               children: [
-                SafeNetworkImage(
-                  imageUrl: item.firstImage,
-                  height: 125,
-                  width: double.infinity,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+                Hero(
+                  tag: 'listing-image-${item.id}',
+                  child: SafeNetworkImage(
+                    imageUrl: item.firstImage,
+                    height: 125,
+                    width: double.infinity,
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(15)),
+                  ),
                 ),
                 // Price Tag
                 Positioned(
@@ -77,10 +83,17 @@ class ListingCard extends StatelessWidget {
                         color: Colors.white.withValues(alpha: 0.88),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(
-                        item.isBookmarked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                        color: item.isBookmarked ? AppColors.error : AppColors.textPrimary,
-                        size: 15,
+                      child: PopOnChanged(
+                        value: item.isBookmarked,
+                        child: Icon(
+                          item.isBookmarked
+                              ? Icons.favorite_rounded
+                              : Icons.favorite_border_rounded,
+                          color: item.isBookmarked
+                              ? AppColors.error
+                              : AppColors.textPrimary,
+                          size: 15,
+                        ),
                       ),
                     ),
                   ),

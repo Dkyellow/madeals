@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 
@@ -74,17 +75,22 @@ class CustomBottomNavBar extends StatelessWidget {
     final isSelected = currentIndex == index;
 
     return InkWell(
-      onTap: () => onTap(index),
-      splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap(index);
+      },
+      splashColor: AppColors.primary.withValues(alpha: 0.08),
+      highlightColor: AppColors.primary.withValues(alpha: 0.06),
+      borderRadius: BorderRadius.circular(14),
       child: SizedBox(
         width: 60,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             AnimatedScale(
-              scale: isSelected ? 1.1 : 1.0,
-              duration: const Duration(milliseconds: 150),
+              scale: isSelected ? 1.18 : 1.0,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOutBack,
               child: Icon(
                 isSelected ? icon : outlineIcon,
                 color: isSelected ? AppColors.primary : AppColors.textMuted,
@@ -92,13 +98,15 @@ class CustomBottomNavBar extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 3),
-            Text(
-              label,
+            AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOutCubic,
               style: AppTextStyles.labelSmall.copyWith(
                 color: isSelected ? AppColors.primary : AppColors.textMuted,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                 fontSize: 10.5,
               ),
+              child: Text(label),
             ),
           ],
         ),

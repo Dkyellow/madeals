@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/animations/micro_interactions.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import 'bottom_nav_bar.dart';
@@ -44,10 +46,12 @@ class MainShellScaffold extends StatelessWidget {
           : Padding(
               // Lift above any bottom input bars (e.g. chat send row)
               padding: const EdgeInsets.only(bottom: 12),
-              child: FloatingActionButton.extended(
-                onPressed: () {
-                  context.push('/sell');
-                },
+              child: TapScale(
+                child: FloatingActionButton.extended(
+                  onPressed: () {
+                    HapticFeedback.mediumImpact();
+                    context.push('/sell');
+                  },
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
                 elevation: 4,
@@ -58,6 +62,7 @@ class MainShellScaffold extends StatelessWidget {
                     color: Colors.white,
                     fontWeight: FontWeight.w800,
                   ),
+                ),
                 ),
               ),
             ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/animations/micro_interactions.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../providers/listings_provider.dart';
@@ -365,15 +366,18 @@ class _SearchDiscoveryScreenState extends ConsumerState<SearchDiscoveryScreen> {
       ];
     }
 
-    return results.map((item) {
-      return CompactListingCard(
-        item: item,
-        onTap: () {
-          context.push('/item-detail/${item.id}');
-        },
-        onBookmarkToggle: () {
-          ref.read(listingsProvider.notifier).toggleBookmark(item.id);
-        },
+    return results.asMap().entries.map((entry) {
+      return FadeSlideIn(
+        delay: FadeSlideIn.stagger(entry.key),
+        child: CompactListingCard(
+          item: entry.value,
+          onTap: () {
+            context.push('/item-detail/${entry.value.id}');
+          },
+          onBookmarkToggle: () {
+            ref.read(listingsProvider.notifier).toggleBookmark(entry.value.id);
+          },
+        ),
       );
     }).toList();
   }

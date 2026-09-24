@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/animations/micro_interactions.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../models/listing_item.dart';
@@ -233,14 +234,18 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
 
                     // Featured Listing Banner
                     if (featuredItem != null) ...[
-                      FeaturedListingCard(
-                        item: featuredItem,
-                        onTap: () {
-                          context.push('/item-detail/${featuredItem!.id}');
-                        },
-                        onBookmarkToggle: () {
-                          ref.read(listingsProvider.notifier).toggleBookmark(featuredItem!.id);
-                        },
+                      FadeSlideIn(
+                        child: FeaturedListingCard(
+                          item: featuredItem,
+                          onTap: () {
+                            context.push('/item-detail/${featuredItem!.id}');
+                          },
+                          onBookmarkToggle: () {
+                            ref
+                                .read(listingsProvider.notifier)
+                                .toggleBookmark(featuredItem!.id);
+                          },
+                        ),
                       ),
                       const SizedBox(height: 16),
                     ],
@@ -312,14 +317,19 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
                         }
 
                         final listing = otherListings[itemIndex];
-                        return ListingCard(
-                          item: listing,
-                          onTap: () {
-                            context.push('/item-detail/${listing.id}');
-                          },
-                          onBookmarkToggle: () {
-                            ref.read(listingsProvider.notifier).toggleBookmark(listing.id);
-                          },
+                        return FadeSlideIn(
+                          delay: FadeSlideIn.stagger(itemIndex, stepMs: 45),
+                          child: ListingCard(
+                            item: listing,
+                            onTap: () {
+                              context.push('/item-detail/${listing.id}');
+                            },
+                            onBookmarkToggle: () {
+                              ref
+                                  .read(listingsProvider.notifier)
+                                  .toggleBookmark(listing.id);
+                            },
+                          ),
                         );
                       },
                     ),

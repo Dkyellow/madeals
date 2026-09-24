@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../core/animations/micro_interactions.dart';
 import '../../core/constants/map_theme.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -242,12 +244,19 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             },
           ),
           IconButton(
-            icon: Icon(
-              isBookmarked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-              color: isBookmarked ? AppColors.error : AppColors.textPrimary,
-              size: 22,
+            icon: PopOnChanged(
+              value: isBookmarked,
+              peak: 1.4,
+              child: Icon(
+                isBookmarked
+                    ? Icons.favorite_rounded
+                    : Icons.favorite_border_rounded,
+                color: isBookmarked ? AppColors.error : AppColors.textPrimary,
+                size: 22,
+              ),
             ),
             onPressed: () {
+              HapticFeedback.mediumImpact();
               ref.read(listingsProvider.notifier).toggleBookmark(item.id);
             },
           ),
@@ -402,22 +411,25 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       height: 270,
       child: Stack(
         children: [
-          PageView.builder(
-            controller: _pageController,
-            itemCount: images.length,
-            onPageChanged: (index) {
-              setState(() {
-                _currentImageIndex = index;
-              });
-            },
-            itemBuilder: (context, index) {
-              return SafeNetworkImage(
-                imageUrl: images[index],
-                height: 270,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              );
-            },
+          Hero(
+            tag: 'listing-image-${item.id}',
+            child: PageView.builder(
+              controller: _pageController,
+              itemCount: images.length,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentImageIndex = index;
+                });
+              },
+              itemBuilder: (context, index) {
+                return SafeNetworkImage(
+                  imageUrl: images[index],
+                  height: 270,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                );
+              },
+            ),
           ),
           // Gradient shadow overlay
           Positioned(
@@ -667,20 +679,22 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton.icon(
-              icon: const Icon(Icons.sync_alt_rounded, size: 16, color: Colors.white),
-              label: Text(
-                'Propose Trade / Barter Swap',
-                style: AppTextStyles.labelMedium.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
+            child: TapScale(
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.sync_alt_rounded, size: 16, color: Colors.white),
+                label: Text(
+                  'Propose Trade / Barter Swap',
+                  style: AppTextStyles.labelMedium.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-              ),
-              onPressed: () => _showTradeProposalModal(context, item),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                minimumSize: const Size(double.infinity, 42),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                onPressed: () => _showTradeProposalModal(context, item),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  minimumSize: const Size(double.infinity, 42),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
               ),
             ),
           ),
@@ -799,20 +813,22 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           // WhatsApp Launch Button
           Expanded(
             flex: 1,
-            child: OutlinedButton.icon(
-              icon: const Icon(Icons.chat_rounded, color: AppColors.whatsAppGreen, size: 18),
-              label: Text(
-                'WhatsApp',
-                style: AppTextStyles.labelMedium.copyWith(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w800,
+            child: TapScale(
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.chat_rounded, color: AppColors.whatsAppGreen, size: 18),
+                label: Text(
+                  'WhatsApp',
+                  style: AppTextStyles.labelMedium.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-              ),
-              onPressed: () => _launchWhatsApp(item),
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size(0, 50),
-                side: const BorderSide(color: AppColors.border, width: 1.5),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                onPressed: () => _launchWhatsApp(item),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(0, 50),
+                  side: const BorderSide(color: AppColors.border, width: 1.5),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
               ),
             ),
           ),
@@ -820,20 +836,25 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           // Direct In-App Message Seller Button
           Expanded(
             flex: 1,
-            child: ElevatedButton.icon(
-              icon: const Icon(Icons.send_rounded, color: Colors.white, size: 18),
-              label: Text(
-                'Message',
-                style: AppTextStyles.labelMedium.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
+            child: TapScale(
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.send_rounded, color: Colors.white, size: 18),
+                label: Text(
+                  'Message',
+                  style: AppTextStyles.labelMedium.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-              ),
-              onPressed: () => _startInAppChat(item),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                minimumSize: const Size(0, 50),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                onPressed: () {
+                  HapticFeedback.mediumImpact();
+                  _startInAppChat(item);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  minimumSize: const Size(0, 50),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
               ),
             ),
           ),

@@ -12,6 +12,33 @@ import '../../widgets/navigation/main_shell_scaffold.dart';
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>();
 
+/// Soft push transition: quick fade + gentle slide-up (detail/sell/chat).
+CustomTransitionPage<void> _softPush(GoRouterState state, Widget child) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: const Duration(milliseconds: 280),
+    reverseTransitionDuration: const Duration(milliseconds: 240),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final curved = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      );
+      return FadeTransition(
+        opacity: curved,
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, 0.05),
+            end: Offset.zero,
+          ).animate(curved),
+          child: child,
+        ),
+      );
+    },
+  );
+}
+
 class AppRouter {
   static final GoRouter router = GoRouter(
     navigatorKey: _rootNavigatorKey,
@@ -48,29 +75,31 @@ class AppRouter {
           GoRoute(
             path: '/item-detail/:id',
             name: 'item-detail',
-            builder: (context, state) {
+            pageBuilder: (context, state) {
               final id = state.pathParameters['id'] ?? 'deal_01';
-              return ProductDetailScreen(listingId: id);
+              return _softPush(state, ProductDetailScreen(listingId: id));
             },
           ),
           GoRoute(
             path: '/detail/:id',
             name: 'detail',
-            builder: (context, state) {
+            pageBuilder: (context, state) {
               final id = state.pathParameters['id'] ?? 'deal_01';
-              return ProductDetailScreen(listingId: id);
+              return _softPush(state, ProductDetailScreen(listingId: id));
             },
           ),
           // Sell / Post a Deal
           GoRoute(
             path: '/sell',
             name: 'sell',
-            builder: (context, state) => const PostDealScreen(),
+            pageBuilder: (context, state) =>
+                _softPush(state, const PostDealScreen()),
           ),
           GoRoute(
             path: '/post-deal',
             name: 'post-deal',
-            builder: (context, state) => const PostDealScreen(),
+            pageBuilder: (context, state) =>
+                _softPush(state, const PostDealScreen()),
           ),
           // Messages & Real-Time Chat Room
           GoRoute(
@@ -81,9 +110,9 @@ class AppRouter {
           GoRoute(
             path: '/chat/:threadId',
             name: 'chat-room',
-            builder: (context, state) {
+            pageBuilder: (context, state) {
               final threadId = state.pathParameters['threadId'] ?? 'thread_01';
-              return ChatRoomScreen(threadId: threadId);
+              return _softPush(state, ChatRoomScreen(threadId: threadId));
             },
           ),
           // Guest Profile & Settings
