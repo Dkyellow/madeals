@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_text_styles.dart';
 import 'bottom_nav_bar.dart';
 
 class MainShellScaffold extends StatelessWidget {
@@ -28,8 +30,30 @@ class MainShellScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final onSellScreen =
+        location.startsWith('/sell') || location.startsWith('/post-deal');
+
     return Scaffold(
       body: child,
+      // Floating "Sell" action button (replaces the old nav-bar pill)
+      floatingActionButton: onSellScreen
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: () {
+                context.push('/sell');
+              },
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              elevation: 4,
+              icon: const Icon(Icons.add_rounded, size: 22),
+              label: Text(
+                'Sell',
+                style: AppTextStyles.labelLarge.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _calculateSelectedIndex(),
         onTap: (index) {
@@ -47,9 +71,6 @@ class MainShellScaffold extends StatelessWidget {
               context.go('/profile');
               break;
           }
-        },
-        onSellTap: () {
-          context.push('/sell');
         },
       ),
     );

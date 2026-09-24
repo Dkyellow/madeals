@@ -5,13 +5,11 @@ import '../../core/theme/app_text_styles.dart';
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
-  final VoidCallback onSellTap;
 
   const CustomBottomNavBar({
     super.key,
     required this.currentIndex,
     required this.onTap,
-    required this.onSellTap,
   });
 
   @override
@@ -47,43 +45,6 @@ class CustomBottomNavBar extends StatelessWidget {
                 icon: Icons.search_rounded,
                 outlineIcon: Icons.search_rounded,
                 label: 'Search',
-              ),
-              // Sell Floating Button in center
-              GestureDetector(
-                onTap: onSellTap,
-                child: Container(
-                  height: 48,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [AppColors.primary, AppColors.primaryHover],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.35),
-                        blurRadius: 10,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.add_rounded, color: Colors.white, size: 20),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Sell',
-                        style: AppTextStyles.labelMedium.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ),
               _buildNavItem(
                 index: 2,
