@@ -6,6 +6,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../models/listing_item.dart';
 import '../../providers/listings_provider.dart';
+import '../../widgets/common/shimmer.dart';
 import '../../widgets/navigation/top_search_bar.dart';
 import '../../widgets/listing/category_chip.dart';
 import '../../widgets/listing/featured_listing_card.dart';
@@ -40,6 +41,24 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
     _searchController = TextEditingController(
       text: ref.read(searchQueryProvider),
     );
+    // Load SQLite listings after first frame → shimmer skeletons show first.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _bootListings());
+  }
+
+  Future<void> _bootListings() async {
+    if (!mounted) return;
+    if (ref.read(listingsProvider).isNotEmpty) {
+      ref.read(bootCompletedProvider.notifier).state = true;
+      return;
+    }
+    try {
+      await ref.read(listingsProvider.notifier).refreshFromDb();
+    } catch (_) {
+      // DB unavailable (e.g. tests) — fall through and finish boot anyway.
+    }
+    if (mounted) {
+      ref.read(bootCompletedProvider.notifier).state = true;
+    }
   }
 
   @override
@@ -134,6 +153,7 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
   Widget build(BuildContext context) {
     final filteredListings = ref.watch(filteredListingsProvider);
     final selectedCategory = ref.watch(selectedCategoryProvider);
+    final booted = ref.watch(bootCompletedProvider);
 
     ListingItem? featuredItem;
     try {
@@ -195,7 +215,13 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
                 onRefresh: () async {
                   await ref.read(listingsProvider.notifier).refreshFromDb();
                 },
-                child: ListView(
+                child: !booted
+                    ? ListView(
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                        children: const [HomeFeedSkeleton()],
+                      )
+                    : ListView(
                   physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                   children: [

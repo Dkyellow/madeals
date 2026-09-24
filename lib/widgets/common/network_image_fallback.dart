@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import 'shimmer.dart';
 
 class SafeNetworkImage extends StatelessWidget {
   final String imageUrl;
@@ -47,20 +48,10 @@ class SafeNetworkImage extends StatelessWidget {
             },
             loadingBuilder: (context, child, loadingProgress) {
               if (loadingProgress == null) return child;
-              return Container(
+              return ShimmerBox(
                 width: width,
                 height: height,
-                color: AppColors.surfaceVariant,
-                child: Center(
-                  child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.primary.withValues(alpha: 0.5),
-                    ),
-                  ),
-                ),
+                radius: 0,
               );
             },
           );

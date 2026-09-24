@@ -12,6 +12,7 @@ import '../../core/theme/app_text_styles.dart';
 import '../../models/listing_item.dart';
 import '../../providers/listings_provider.dart';
 import '../../providers/chat_provider.dart';
+import '../../widgets/common/shimmer.dart';
 import '../../widgets/common/network_image_fallback.dart';
 import '../../widgets/common/verified_badge.dart';
 
@@ -215,8 +216,29 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final item = ref.watch(singleListingProvider(widget.listingId)) ??
-        ref.watch(listingsProvider).first;
+    // Resolve listing; while SQLite is still booting show a shimmer skeleton.
+    final resolved = ref.watch(singleListingProvider(widget.listingId)) ??
+        (ref.watch(listingsProvider).isEmpty
+            ? null
+            : ref.watch(listingsProvider).first);
+    if (resolved == null) {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+            onPressed: () => context.pop(),
+          ),
+          title: Text(
+            'Item Details',
+            style: AppTextStyles.titleLarge.copyWith(fontWeight: FontWeight.w800),
+          ),
+          centerTitle: true,
+        ),
+        body: const SafeArea(child: DetailSkeleton()),
+      );
+    }
+    final item = resolved;
 
     final isBookmarked = item.isBookmarked;
 

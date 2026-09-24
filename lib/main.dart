@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'core/db/database_helper.dart';
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
-import 'providers/listings_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,15 +15,11 @@ Future<void> main() async {
     ),
   );
 
-  // SQLite (`madeals.db`) is the single source of truth — init + seed before UI.
-  final initialListings = await DatabaseHelper.instance.getListings();
-
+  // SQLite (`madeals.db`) is the source of truth — loaded asynchronously by
+  // the home screen after first frame, so shimmer skeletons paint immediately.
   runApp(
-    ProviderScope(
-      overrides: [
-        initialListingsProvider.overrideWithValue(initialListings),
-      ],
-      child: const MaDealsApp(),
+    const ProviderScope(
+      child: MaDealsApp(),
     ),
   );
 }

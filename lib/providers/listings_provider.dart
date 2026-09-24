@@ -47,6 +47,10 @@ final listingsProvider =
   return ListingsNotifier(ref.watch(initialListingsProvider));
 });
 
+/// True once the first SQLite load attempt has finished (success or not).
+/// Screens show shimmer skeletons until this flips to true.
+final bootCompletedProvider = StateProvider<bool>((ref) => false);
+
 // App State Filter Providers
 final searchQueryProvider = StateProvider<String>((ref) => '');
 final selectedCategoryProvider = StateProvider<String>((ref) => 'All');

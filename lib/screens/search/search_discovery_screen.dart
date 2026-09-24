@@ -5,6 +5,7 @@ import '../../core/animations/micro_interactions.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../providers/listings_provider.dart';
+import '../../widgets/common/shimmer.dart';
 import '../../widgets/discovery/interactive_map_view.dart';
 import '../../widgets/listing/compact_listing_card.dart';
 
@@ -348,6 +349,10 @@ class _SearchDiscoveryScreenState extends ConsumerState<SearchDiscoveryScreen> {
 
   List<Widget> _buildResultCards(List<dynamic> results) {
     if (results.isEmpty) {
+      // Booting from SQLite → shimmer skeletons instead of "no results".
+      if (!ref.watch(bootCompletedProvider)) {
+        return [const SearchResultsSkeleton()];
+      }
       return [
         Container(
           padding: const EdgeInsets.all(32),
