@@ -785,11 +785,15 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   interactionOptions: const InteractionOptions(flags: 0),
                 ),
                 children: [
-                  // CARTO Positron — plain light style (no house numbers)
+                  // Esri Light Gray Canvas — plain light style (no house numbers)
                   TileLayer(
                     urlTemplate:
-                        'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-                    subdomains: const ['a', 'b', 'c', 'd'],
+                        'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+                    userAgentPackageName: 'com.madeals.app',
+                  ),
+                  TileLayer(
+                    urlTemplate:
+                        'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
                     userAgentPackageName: 'com.madeals.app',
                   ),
                   MarkerLayer(
@@ -804,6 +808,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           size: 36,
                         ),
                       ),
+                    ],
+                  ),
+                  const RichAttributionWidget(
+                    alignment: AttributionAlignment.bottomLeft,
+                    attributions: [
+                      TextSourceAttribution('© Esri, HERE, Garmin'),
                     ],
                   ),
                 ],

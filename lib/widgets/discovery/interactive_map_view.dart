@@ -223,12 +223,18 @@ class _InteractiveMapViewState extends State<InteractiveMapView> {
               initialZoom: 12.5,
             ),
             children: [
-              // CARTO Positron — plain, Google-Maps-like light style:
-              // no house numbers, no building clutter, subtle labels.
+              // Esri Light Gray Canvas — plain, Google-Maps-like base:
+              // no house numbers, no building clutter, minimal styling.
+              // (URL order is {z}/{y}/{x} for ArcGIS tile services.)
               TileLayer(
                 urlTemplate:
-                    'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-                subdomains: const ['a', 'b', 'c', 'd'],
+                    'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+                userAgentPackageName: 'com.madeals.app',
+              ),
+              // Street-name reference overlay (labels only, still plain)
+              TileLayer(
+                urlTemplate:
+                    'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
                 userAgentPackageName: 'com.madeals.app',
               ),
               MarkerLayer(
@@ -245,9 +251,11 @@ class _InteractiveMapViewState extends State<InteractiveMapView> {
                     .toList(),
               ),
               const RichAttributionWidget(
+                alignment: AttributionAlignment.bottomLeft,
+                popupInitialDisplayDuration: Duration(seconds: 5),
                 attributions: [
                   TextSourceAttribution(
-                    '© OpenStreetMap contributors',
+                    '© Esri, HERE, Garmin, NGA, USGS',
                   ),
                 ],
               ),
