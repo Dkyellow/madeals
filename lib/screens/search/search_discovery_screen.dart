@@ -3,9 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
-import '../../models/auction_item.dart';
 import '../../providers/listings_provider.dart';
-import '../../widgets/discovery/live_auction_banner.dart';
 import '../../widgets/discovery/interactive_map_view.dart';
 import '../../widgets/listing/compact_listing_card.dart';
 
@@ -13,23 +11,12 @@ class SearchDiscoveryScreen extends ConsumerStatefulWidget {
   const SearchDiscoveryScreen({super.key});
 
   @override
-  ConsumerState<SearchDiscoveryScreen> createState() => _SearchDiscoveryScreenState();
+  ConsumerState<SearchDiscoveryScreen> createState() =>
+      _SearchDiscoveryScreenState();
 }
 
 class _SearchDiscoveryScreenState extends ConsumerState<SearchDiscoveryScreen> {
   late TextEditingController _searchController;
-  AuctionItem _mockAuction = const AuctionItem(
-    id: 'auc_01',
-    title: 'iPhone 13 128GB Unlocked (Harare CBD)',
-    imageUrl: 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=400',
-    currentBid: 340,
-    startingBid: 250,
-    totalBids: 14,
-    remainingTime: Duration(minutes: 1, seconds: 42),
-    condition: '9/10 Battery 88%',
-    location: 'Harare CBD',
-    isVerified: true,
-  );
 
   @override
   void initState() {
@@ -81,21 +68,27 @@ class _SearchDiscoveryScreenState extends ConsumerState<SearchDiscoveryScreen> {
                     children: [
                       Text(
                         'Filter Listings',
-                        style: AppTextStyles.headlineMedium.copyWith(fontWeight: FontWeight.w800),
+                        style: AppTextStyles.headlineMedium
+                            .copyWith(fontWeight: FontWeight.w800),
                       ),
                       TextButton(
                         onPressed: () {
-                          ref.read(selectedMaxPriceProvider.notifier).state = null;
-                          ref.read(selectedDistanceFilterProvider.notifier).state = null;
-                          ref.read(isVerifiedOnlyProvider.notifier).state = false;
-                          ref.read(selectedCategoryProvider.notifier).state = 'All';
+                          ref.read(selectedMaxPriceProvider.notifier).state =
+                              null;
+                          ref.read(selectedDistanceFilterProvider.notifier)
+                              .state = null;
+                          ref.read(isVerifiedOnlyProvider.notifier).state =
+                              false;
+                          ref.read(selectedCategoryProvider.notifier).state =
+                              'All';
                           ref.read(searchQueryProvider.notifier).state = '';
                           _searchController.clear();
                           Navigator.pop(context);
                         },
                         child: Text(
                           'Reset All',
-                          style: AppTextStyles.labelMedium.copyWith(color: AppColors.error),
+                          style: AppTextStyles.labelMedium
+                              .copyWith(color: AppColors.error),
                         ),
                       ),
                     ],
@@ -103,7 +96,8 @@ class _SearchDiscoveryScreenState extends ConsumerState<SearchDiscoveryScreen> {
                   const SizedBox(height: 14),
                   Text(
                     'Max Price: \$${currentMaxPrice.toInt()}',
-                    style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w700),
+                    style: AppTextStyles.titleMedium
+                        .copyWith(fontWeight: FontWeight.w700),
                   ),
                   Slider(
                     value: currentMaxPrice,
@@ -120,7 +114,8 @@ class _SearchDiscoveryScreenState extends ConsumerState<SearchDiscoveryScreen> {
                   const SizedBox(height: 10),
                   Text(
                     'Distance Radius: ${currentDistance.toInt()} km',
-                    style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w700),
+                    style: AppTextStyles.titleMedium
+                        .copyWith(fontWeight: FontWeight.w700),
                   ),
                   Slider(
                     value: currentDistance,
@@ -159,9 +154,12 @@ class _SearchDiscoveryScreenState extends ConsumerState<SearchDiscoveryScreen> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      ref.read(selectedMaxPriceProvider.notifier).state = currentMaxPrice;
-                      ref.read(selectedDistanceFilterProvider.notifier).state = currentDistance;
-                      ref.read(isVerifiedOnlyProvider.notifier).state = verifiedOnly;
+                      ref.read(selectedMaxPriceProvider.notifier).state =
+                          currentMaxPrice;
+                      ref.read(selectedDistanceFilterProvider.notifier).state =
+                          currentDistance;
+                      ref.read(isVerifiedOnlyProvider.notifier).state =
+                          verifiedOnly;
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
@@ -170,79 +168,14 @@ class _SearchDiscoveryScreenState extends ConsumerState<SearchDiscoveryScreen> {
                     ),
                     child: Text(
                       'Apply Filters',
-                      style: AppTextStyles.labelLarge.copyWith(color: Colors.white, fontWeight: FontWeight.w800),
+                      style: AppTextStyles.labelLarge.copyWith(
+                          color: Colors.white, fontWeight: FontWeight.w800),
                     ),
                   ),
                 ],
               ),
             );
           },
-        );
-      },
-    );
-  }
-
-  void _showBidBottomSheet(BuildContext context) {
-    double nextBid = _mockAuction.currentBid + 10;
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Place Instant Bid',
-                style: AppTextStyles.headlineMedium.copyWith(fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Next minimum bid is \$${nextBid.toInt()}. Peer-to-peer settlement upon auction close.',
-                textAlign: TextAlign.center,
-                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _mockAuction = AuctionItem(
-                      id: _mockAuction.id,
-                      title: _mockAuction.title,
-                      imageUrl: _mockAuction.imageUrl,
-                      currentBid: nextBid,
-                      startingBid: _mockAuction.startingBid,
-                      totalBids: _mockAuction.totalBids + 1,
-                      remainingTime: _mockAuction.remainingTime + const Duration(seconds: 45),
-                      condition: _mockAuction.condition,
-                      location: _mockAuction.location,
-                      isVerified: true,
-                    );
-                  });
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      backgroundColor: AppColors.zimGreen,
-                      content: Text('🎉 Bid placed for \$${nextBid.toInt()}! You are currently the highest bidder.'),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  minimumSize: const Size(double.infinity, 50),
-                ),
-                child: Text(
-                  'Confirm Bid: \$${nextBid.toInt()}',
-                  style: AppTextStyles.labelLarge.copyWith(color: Colors.white, fontWeight: FontWeight.w800),
-                ),
-              ),
-              const SizedBox(height: 12),
-            ],
-          ),
         );
       },
     );
@@ -257,125 +190,116 @@ class _SearchDiscoveryScreenState extends ConsumerState<SearchDiscoveryScreen> {
     final maxPrice = ref.watch(selectedMaxPriceProvider);
     final distance = ref.watch(selectedDistanceFilterProvider);
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-          onPressed: () => context.pop(),
-        ),
-        title: _buildSearchInputField(),
-        titleSpacing: 0,
-        actions: [
-          IconButton(
-            icon: Icon(
-              isMapView ? Icons.view_list_rounded : Icons.map_rounded,
-              color: AppColors.primary,
-            ),
-            tooltip: isMapView ? 'Switch to List' : 'Switch to Map',
-            onPressed: () {
-              ref.read(isMapViewProvider.notifier).state = !isMapView;
-            },
-          ),
-          const SizedBox(width: 8),
-        ],
+    final header = _FloatingHeader(
+      searchController: _searchController,
+      isMapView: isMapView,
+      onBack: () => context.pop(),
+      onSearchChanged: (val) {
+        ref.read(searchQueryProvider.notifier).state = val;
+      },
+      onToggleView: () {
+        ref.read(isMapViewProvider.notifier).state = !isMapView;
+      },
+      onFilterTap: _showFilterModal,
+      filterPills: _buildAppliedFiltersRow(
+        query: query,
+        category: selectedCategory,
+        maxPrice: maxPrice,
+        distance: distance,
       ),
+    );
+
+    if (isMapView) {
+      // Google Maps–style layout: map as full-screen background with
+      // floating search controls and a draggable results sheet.
+      return Scaffold(
+        body: Stack(
+          children: [
+            // Full-bleed map background
+            Positioned.fill(
+              child: InteractiveMapView(
+                height: null,
+                rounded: false,
+                listings: searchResults,
+                onPinSelected: (item) {
+                  context.push('/item-detail/${item.id}');
+                },
+              ),
+            ),
+            // Floating search + filter pills
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: SafeArea(bottom: false, child: header),
+            ),
+            // Draggable results sheet (Google Maps style)
+            Positioned.fill(
+              child: DraggableScrollableSheet(
+                initialChildSize: 0.32,
+                minChildSize: 0.12,
+                maxChildSize: 0.88,
+                snap: true,
+                builder: (context, scrollController) {
+                  return Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(24)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0x22000000),
+                          blurRadius: 16,
+                          offset: Offset(0, -4),
+                        ),
+                      ],
+                    ),
+                    child: ListView(
+                      controller: scrollController,
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
+                      children: [
+                        // Drag handle
+                        Center(
+                          child: Container(
+                            width: 40,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: AppColors.border,
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        _buildResultsHeader(searchResults.length),
+                        const SizedBox(height: 12),
+                        ..._buildResultCards(searchResults),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // List view (map toggled off)
+    return Scaffold(
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
-            // Applied Filter Tags Bar
-            _buildAppliedFiltersRow(
-              query: query,
-              category: selectedCategory,
-              maxPrice: maxPrice,
-              distance: distance,
-            ),
-            const Divider(height: 1),
-            // Results & Discovery Scroll Area
+            header,
             Expanded(
               child: ListView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                 children: [
-                  // Live Auction Banner
-                  LiveAuctionBanner(
-                    auction: _mockAuction,
-                    onBidTap: () => _showBidBottomSheet(context),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Interactive Map View Header
-                  if (isMapView) ...[
-                    InteractiveMapView(
-                      listings: searchResults,
-                      onPinSelected: (item) {
-                        context.push('/item-detail/${item.id}');
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-
-                  // Results count & Sort
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '${searchResults.length} listings in Harare',
-                        style: AppTextStyles.titleMedium.copyWith(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14.5,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          const Icon(Icons.sort_rounded, size: 16, color: AppColors.textSecondary),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Closest first',
-                            style: AppTextStyles.labelSmall.copyWith(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                  _buildResultsHeader(searchResults.length),
                   const SizedBox(height: 12),
-
-                  // Compact Cards List
-                  if (searchResults.isEmpty)
-                    Container(
-                      padding: const EdgeInsets.all(32),
-                      alignment: Alignment.center,
-                      child: Column(
-                        children: [
-                          const Icon(Icons.search_off_rounded, size: 48, color: AppColors.textMuted),
-                          const SizedBox(height: 12),
-                          Text(
-                            'No exact matches for current search',
-                            style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w700),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            'Try resetting filters or expanding price limit.',
-                            style: AppTextStyles.bodySmall,
-                          ),
-                        ],
-                      ),
-                    )
-                  else
-                    ...searchResults.map((item) {
-                      return CompactListingCard(
-                        item: item,
-                        onTap: () {
-                          context.push('/item-detail/${item.id}');
-                        },
-                        onBookmarkToggle: () {
-                          ref.read(listingsProvider.notifier).toggleBookmark(item.id);
-                        },
-                      );
-                    }),
+                  ..._buildResultCards(searchResults),
                 ],
               ),
             ),
@@ -385,43 +309,73 @@ class _SearchDiscoveryScreenState extends ConsumerState<SearchDiscoveryScreen> {
     );
   }
 
-  Widget _buildSearchInputField() {
-    return Container(
-      height: 42,
-      margin: const EdgeInsets.only(right: 8),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceVariant,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: TextField(
-        controller: _searchController,
-        style: AppTextStyles.bodyMedium.copyWith(
-          color: AppColors.textPrimary,
-          fontWeight: FontWeight.w600,
+  Widget _buildResultsHeader(int count) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          '$count listings in Harare',
+          style: AppTextStyles.titleMedium.copyWith(
+            fontWeight: FontWeight.w700,
+            fontSize: 14.5,
+          ),
         ),
-        decoration: InputDecoration(
-          hintText: 'Search Zimbabwe deals...',
-          prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textMuted, size: 18),
-          suffixIcon: _searchController.text.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(Icons.clear_rounded, size: 16),
-                  onPressed: () {
-                    _searchController.clear();
-                    ref.read(searchQueryProvider.notifier).state = '';
-                  },
-                )
-              : null,
-          contentPadding: const EdgeInsets.symmetric(vertical: 10),
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
+        Row(
+          children: [
+            const Icon(Icons.sort_rounded,
+                size: 16, color: AppColors.textSecondary),
+            const SizedBox(width: 4),
+            Text(
+              'Closest first',
+              style: AppTextStyles.labelSmall.copyWith(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
         ),
-        onChanged: (val) {
-          ref.read(searchQueryProvider.notifier).state = val;
-        },
-      ),
+      ],
     );
+  }
+
+  List<Widget> _buildResultCards(List<dynamic> results) {
+    if (results.isEmpty) {
+      return [
+        Container(
+          padding: const EdgeInsets.all(32),
+          alignment: Alignment.center,
+          child: Column(
+            children: [
+              const Icon(Icons.search_off_rounded,
+                  size: 48, color: AppColors.textMuted),
+              const SizedBox(height: 12),
+              Text(
+                'No exact matches for current search',
+                style: AppTextStyles.titleMedium
+                    .copyWith(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Try resetting filters or expanding price limit.',
+                style: AppTextStyles.bodySmall,
+              ),
+            ],
+          ),
+        ),
+      ];
+    }
+
+    return results.map((item) {
+      return CompactListingCard(
+        item: item,
+        onTap: () {
+          context.push('/item-detail/${item.id}');
+        },
+        onBookmarkToggle: () {
+          ref.read(listingsProvider.notifier).toggleBookmark(item.id);
+        },
+      );
+    }).toList();
   }
 
   Widget _buildAppliedFiltersRow({
@@ -432,21 +386,22 @@ class _SearchDiscoveryScreenState extends ConsumerState<SearchDiscoveryScreen> {
   }) {
     final List<Widget> filterPills = [];
 
-    // Filter Button
     filterPills.add(
       GestureDetector(
         onTap: _showFilterModal,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
-            color: AppColors.primaryLight,
+            color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+            border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.35)),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.tune_rounded, size: 14, color: AppColors.primary),
+              const Icon(Icons.tune_rounded,
+                  size: 14, color: AppColors.primary),
               const SizedBox(width: 4),
               Text(
                 'Filters',
@@ -486,17 +441,13 @@ class _SearchDiscoveryScreenState extends ConsumerState<SearchDiscoveryScreen> {
       }));
     }
 
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        child: Row(
-          children: filterPills
-              .map((w) => Padding(padding: const EdgeInsets.only(right: 6), child: w))
-              .toList(),
-        ),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: filterPills
+            .map((w) => Padding(padding: const EdgeInsets.only(right: 6), child: w))
+            .toList(),
       ),
     );
   }
@@ -505,7 +456,7 @@ class _SearchDiscoveryScreenState extends ConsumerState<SearchDiscoveryScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.surfaceVariant,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.border),
       ),
@@ -522,9 +473,142 @@ class _SearchDiscoveryScreenState extends ConsumerState<SearchDiscoveryScreen> {
           const SizedBox(width: 4),
           GestureDetector(
             onTap: onRemove,
-            child: const Icon(Icons.close_rounded, size: 13, color: AppColors.textSecondary),
+            child: const Icon(Icons.close_rounded,
+                size: 13, color: AppColors.textSecondary),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Floating Google Maps–style search card + filter pills overlay.
+class _FloatingHeader extends StatelessWidget {
+  final TextEditingController searchController;
+  final bool isMapView;
+  final VoidCallback onBack;
+  final ValueChanged<String> onSearchChanged;
+  final VoidCallback onToggleView;
+  final VoidCallback onFilterTap;
+  final Widget filterPills;
+
+  const _FloatingHeader({
+    required this.searchController,
+    required this.isMapView,
+    required this.onBack,
+    required this.onSearchChanged,
+    required this.onToggleView,
+    required this.onFilterTap,
+    required this.filterPills,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Search card
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.12),
+                  blurRadius: 14,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+                  onPressed: onBack,
+                ),
+                Expanded(child: _SearchField(
+                  controller: searchController,
+                  onChanged: onSearchChanged,
+                )),
+                IconButton(
+                  icon: Icon(
+                    isMapView ? Icons.view_list_rounded : Icons.map_rounded,
+                    color: AppColors.primary,
+                  ),
+                  tooltip: isMapView ? 'Switch to List' : 'Switch to Map',
+                  onPressed: onToggleView,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.tune_rounded,
+                      color: AppColors.primary),
+                  tooltip: 'Filters',
+                  onPressed: onFilterTap,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Floating filter pills
+          Align(
+            alignment: Alignment.centerLeft,
+            child: filterPills,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SearchField extends StatelessWidget {
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
+
+  const _SearchField({required this.controller, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 38,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceVariant,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: TextField(
+        controller: controller,
+        style: AppTextStyles.bodyMedium.copyWith(
+          color: AppColors.textPrimary,
+          fontWeight: FontWeight.w600,
+          fontSize: 13.5,
+        ),
+        decoration: InputDecoration(
+          hintText: 'Search Zimbabwe deals...',
+          hintStyle: AppTextStyles.bodyMedium.copyWith(
+            color: AppColors.textMuted,
+            fontSize: 13.5,
+          ),
+          prefixIcon:
+              const Icon(Icons.search_rounded, color: AppColors.textMuted, size: 17),
+          suffixIcon: controller.text.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.clear_rounded, size: 15),
+                  onPressed: () {
+                    controller.clear();
+                    onChanged('');
+                  },
+                )
+              : null,
+          contentPadding: const EdgeInsets.symmetric(vertical: 8),
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          isDense: true,
+        ),
+        onChanged: onChanged,
       ),
     );
   }

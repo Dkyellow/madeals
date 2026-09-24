@@ -16,10 +16,18 @@ class InteractiveMapView extends StatefulWidget {
   final List<ListingItem> listings;
   final ValueChanged<ListingItem> onPinSelected;
 
+  /// Map height. Null = fill the parent (full-screen background mode).
+  final double? height;
+
+  /// Rounded card look; false = full-bleed background (no radius/border).
+  final bool rounded;
+
   const InteractiveMapView({
     super.key,
     required this.listings,
     required this.onPinSelected,
+    this.height = 240,
+    this.rounded = true,
   });
 
   @override
@@ -197,13 +205,15 @@ class _InteractiveMapViewState extends State<InteractiveMapView> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 240,
+      height: widget.height,
       width: double.infinity,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: AppColors.background,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border, width: 1),
+        borderRadius: BorderRadius.circular(widget.rounded ? 16 : 0),
+        border: widget.rounded
+            ? Border.all(color: AppColors.border, width: 1)
+            : null,
       ),
       child: Stack(
         children: [
