@@ -36,7 +36,7 @@ $current_file = basename($_SERVER['PHP_SELF']);
 <title><?= e($page_title) ?> — <?= e(APP_NAME) ?></title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= e(BASE_URL) ?>/assets/css/style.css">
+<link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body data-csrf="<?= e($csrf) ?>">
 <div class="app-shell">
@@ -47,14 +47,14 @@ $current_file = basename($_SERVER['PHP_SELF']);
     </div>
     <nav class="sidebar-nav">
       <?php foreach ($nav_items as $file => [$label, $icon]): ?>
-        <a href="<?= e(BASE_URL) ?>/<?= e($file) ?>" class="<?= $current_file === $file ? 'active' : '' ?>">
+        <a href="<?= e($file) ?>" class="<?= $current_file === $file ? 'active' : '' ?>">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="<?= e($icon) ?>"/></svg>
           <?= e($label) ?>
         </a>
       <?php endforeach; ?>
     </nav>
     <div class="sidebar-footer">
-      <a href="<?= e(BASE_URL) ?>/logout.php" class="nav-logout">
+      <a href="logout.php" class="nav-logout">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
         Logout
       </a>

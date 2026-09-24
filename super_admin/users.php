@@ -101,10 +101,10 @@ require __DIR__ . '/includes/header.php';
 <section class="card section-gap">
   <div class="card-header">
     <h2>Filters</h2>
-    <a class="btn btn-ghost btn-sm" href="<?= e(BASE_URL) ?>/users.php">Reset</a>
+    <a class="btn btn-ghost btn-sm" href="users.php">Reset</a>
   </div>
   <div class="card-body">
-    <form method="get" action="<?= e(BASE_URL) ?>/users.php" class="toolbar">
+    <form method="get" action="users.php" class="toolbar">
       <input type="hidden" name="status" value="<?= e($vStatus) ?>">
 
       <div class="search-input">
@@ -134,7 +134,7 @@ require __DIR__ . '/includes/header.php';
 <section class="card section-gap">
   <div class="card-header">
     <h2>Verification Queue <span class="queue-count"><?= e((string)$pendingCount) ?></span></h2>
-    <a class="btn btn-ghost btn-sm" href="<?= e(BASE_URL) ?>/users.php?status=pending">Open queue</a>
+      <a class="btn btn-ghost btn-sm" href="users.php?status=pending">Open queue</a>
   </div>
   <div class="card-body" style="padding:0">
     <div class="table-wrap">
@@ -257,7 +257,7 @@ require __DIR__ . '/includes/header.php';
   <?php
   $renderPageBtn = static function (int $p, string $label, bool $active, bool $disabled, array $base) {
       $base['page'] = $p;
-      $href = e(BASE_URL . '/users.php?' . http_build_query($base));
+      $href = e('users.php?' . http_build_query($base));
       $cls = 'page-btn' . ($active ? ' active' : '');
       if ($disabled) {
           return '<button class="' . $cls . '" disabled>' . $label . '</button>';

@@ -16,11 +16,6 @@
 	<string>MADEALS saves listing photos you capture with the camera.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>MADEALS uses your location to show nearby deals and meetup spots.</string>
-	<key>GMSServices</key>
-	<array>
-		<!-- Google Maps API key (Maps SDK for iOS) -->
-		<string>AIzaSyDS9t7sCpIMXAM0NnCPUdhh4F3p_RBAFpQ</string>
-	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

@@ -92,10 +92,10 @@ require __DIR__ . '/includes/header.php';
 <section class="card section-gap">
   <div class="card-header">
     <h2>Filters</h2>
-    <a class="btn btn-ghost btn-sm" href="<?= e(BASE_URL) ?>/audit_logs.php">Reset</a>
+    <a class="btn btn-ghost btn-sm" href="audit_logs.php">Reset</a>
   </div>
   <div class="card-body">
-    <form method="get" action="<?= e(BASE_URL) ?>/audit_logs.php" class="toolbar">
+    <form method="get" action="audit_logs.php" class="toolbar">
       <div class="search-input">
         <input type="search" name="q" placeholder="Search target ID, reason, IP…" value="<?= e($q) ?>">
       </div>
@@ -156,7 +156,7 @@ require __DIR__ . '/includes/header.php';
   <?php
   $renderPageBtn = static function (int $p, string $label, bool $active, bool $disabled, array $base) {
       $base['page'] = $p;
-      $href = e(BASE_URL . '/audit_logs.php?' . http_build_query($base));
+      $href = e('audit_logs.php?' . http_build_query($base));
       $cls = 'page-btn' . ($active ? ' active' : '');
       if ($disabled) {
           return '<button class="' . $cls . '" disabled>' . $label . '</button>';

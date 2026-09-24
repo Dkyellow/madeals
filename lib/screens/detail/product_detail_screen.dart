@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../core/constants/google_map_style.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../models/listing_item.dart';
@@ -736,30 +736,40 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          // Meetup Location Mini-Map
+          // Meetup Location Mini-Map (free flutter_map / CartoDB light tiles)
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: SizedBox(
               height: 140,
               width: double.infinity,
-              child: GoogleMap(
-                initialCameraPosition: CameraPosition(
-                  target: meetupLatLng,
-                  zoom: 15,
+              child: FlutterMap(
+                options: MapOptions(
+                  initialCenter: meetupLatLng,
+                  initialZoom: 15,
+                  interactionOptions: const InteractionOptions(flags: 0),
                 ),
-                style: GoogleMapStyle.lightSilver,
-                markers: {
-                  Marker(
-                    markerId: const MarkerId('meetup_spot'),
-                    position: meetupLatLng,
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                    subdomains: const ['a', 'b', 'c', 'd'],
+                    userAgentPackageName: 'com.example.madeals',
                   ),
-                },
-                zoomControlsEnabled: false,
-                scrollGesturesEnabled: false,
-                rotateGesturesEnabled: false,
-                tiltGesturesEnabled: false,
-                myLocationButtonEnabled: false,
-                compassEnabled: false,
+                  MarkerLayer(
+                    markers: [
+                      Marker(
+                        point: meetupLatLng,
+                        width: 36,
+                        height: 36,
+                        child: const Icon(
+                          Icons.location_on,
+                          color: AppColors.primary,
+                          size: 36,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),

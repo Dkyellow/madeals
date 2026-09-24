@@ -106,10 +106,10 @@ require __DIR__ . '/includes/header.php';
 <section class="card section-gap">
   <div class="card-header">
     <h2>Filters</h2>
-    <a class="btn btn-ghost btn-sm" href="<?= e(BASE_URL) ?>/listings.php">Reset</a>
+    <a class="btn btn-ghost btn-sm" href="listings.php">Reset</a>
   </div>
   <div class="card-body">
-    <form method="get" action="<?= e(BASE_URL) ?>/listings.php" class="toolbar server-filter">
+    <form method="get" action="listings.php" class="toolbar server-filter">
       <input type="hidden" name="status" value="<?= e($status) ?>">
 
       <div class="search-input">
@@ -222,7 +222,7 @@ require __DIR__ . '/includes/header.php';
   // Pagination render helper (inline).
   $renderPageBtn = static function (int $p, string $label, bool $active, bool $disabled, array $base) {
       $base['page'] = $p;
-      $href = e(BASE_URL . '/listings.php?' . http_build_query($base));
+      $href = e('listings.php?' . http_build_query($base));
       $cls = 'page-btn' . ($active ? ' active' : '');
       if ($disabled) {
           return '<button class="' . $cls . '" disabled>' . $label . '</button>';

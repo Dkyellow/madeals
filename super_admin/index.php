@@ -114,7 +114,7 @@ require __DIR__ . '/includes/header.php';
   <section class="card">
     <div class="card-header">
       <h2>Pending Verifications</h2>
-      <a class="btn btn-ghost btn-sm" href="<?= e(BASE_URL) ?>/users.php?status=pending">View queue</a>
+      <a class="btn btn-ghost btn-sm" href="users.php?status=pending">View queue</a>
     </div>
     <div class="card-body" style="padding:0">
       <div class="table-wrap">
@@ -150,7 +150,7 @@ require __DIR__ . '/includes/header.php';
 <section class="card">
   <div class="card-header">
     <h2>Recent Audit Activity</h2>
-    <a class="btn btn-ghost btn-sm" href="<?= e(BASE_URL) ?>/audit_logs.php">View all</a>
+      <a class="btn btn-ghost btn-sm" href="audit_logs.php">View all</a>
   </div>
   <div class="card-body" style="padding:0">
     <div class="table-wrap">

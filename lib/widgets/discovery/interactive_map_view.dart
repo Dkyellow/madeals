@@ -1,15 +1,16 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../../core/constants/google_map_style.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../models/listing_item.dart';
 
-/// Google Maps discovery view centered on Harare CBD (-17.8252, 31.0335)
-/// with custom light-silver JSON styling and interactive price pins.
-/// Tapping a pin opens an in-map bottom sheet previewing the listing.
+/// Free flutter_map discovery view centered on Harare CBD (-17.8252, 31.0335)
+/// using light-silver CartoDB Positron tiles (#F5F5F5-style minimalist palette)
+/// with interactive price pins. Tapping a pin opens an in-map bottom sheet
+/// previewing the listing.
 class InteractiveMapView extends StatefulWidget {
   final List<ListingItem> listings;
   final ValueChanged<ListingItem> onPinSelected;
@@ -27,40 +28,7 @@ class InteractiveMapView extends StatefulWidget {
 class _InteractiveMapViewState extends State<InteractiveMapView> {
   static const LatLng _harareCbd = LatLng(-17.8252, 31.0335);
 
-  GoogleMapController? _mapController;
   String? selectedListingId;
-  Map<String, Marker> _markers = {};
-
-  @override
-  void initState() {
-    super.initState();
-    _buildMarkers();
-  }
-
-  @override
-  void didUpdateWidget(covariant InteractiveMapView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.listings != widget.listings) {
-      _buildMarkers();
-    }
-  }
-
-  Future<void> _buildMarkers() async {
-    final markers = <String, Marker>{};
-    for (final item in widget.listings) {
-      final icon = await _pricePinIcon(item.formattedPrice);
-      markers[item.id] = Marker(
-        markerId: MarkerId(item.id),
-        position: LatLng(item.latitude, item.longitude),
-        icon: icon,
-        anchor: const Offset(0.5, 1.0),
-        onTap: () => _onPinTapped(item),
-      );
-    }
-    if (mounted) {
-      setState(() => _markers = markers);
-    }
-  }
 
   void _onPinTapped(ListingItem item) {
     setState(() => selectedListingId = item.id);
@@ -171,70 +139,58 @@ class _InteractiveMapViewState extends State<InteractiveMapView> {
     );
   }
 
-  /// Draws a price badge marker ($380 / $4,800) onto a [BitmapDescriptor].
-  Future<BitmapDescriptor> _pricePinIcon(String price) async {
-    const double pixelRatio = 3;
-    const double minWidth = 56;
-    const double height = 34;
+  Widget _buildPricePin(ListingItem item) {
+    final isSelected = selectedListingId == item.id;
 
-    final textPainter = TextPainter(
-      text: TextSpan(
-        text: price,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 12,
-          fontWeight: FontWeight.w800,
-        ),
+    return GestureDetector(
+      onTap: () => _onPinTapped(item),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnimatedScale(
+            scale: isSelected ? 1.12 : 1.0,
+            duration: const Duration(milliseconds: 200),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.zimGreen : AppColors.primary,
+                borderRadius: BorderRadius.circular(17),
+                border: Border.all(color: Colors.white, width: 2),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.28),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.sell_outlined, size: 11, color: Colors.white),
+                  const SizedBox(width: 4),
+                  Text(
+                    item.formattedPrice,
+                    style: AppTextStyles.labelSmall.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 11.5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Pointer tail
+          CustomPaint(
+            size: const Size(12, 6),
+            painter: _PinTailPainter(
+              color: isSelected ? AppColors.zimGreen : AppColors.primary,
+            ),
+          ),
+        ],
       ),
-      textDirection: TextDirection.ltr,
-    )..layout();
-
-    final width = (textPainter.width + 22).clamp(minWidth, 140.0);
-
-    final recorder = ui.PictureRecorder();
-    final canvas = Canvas(recorder);
-
-    final rect = Rect.fromLTWH(0, 0, width, height);
-    final rrect = RRect.fromRectAndRadius(rect, const Radius.circular(17));
-    canvas.drawShadow(Path()..addRRect(rrect), Colors.black, 3, false);
-    canvas.drawRRect(
-      rrect,
-      Paint()..color = AppColors.primary,
     );
-    // pointer triangle
-    final pointer = Path()
-      ..moveTo(width / 2 - 6, height - 1)
-      ..lineTo(width / 2, height + 7)
-      ..lineTo(width / 2 + 6, height - 1)
-      ..close();
-    canvas.drawPath(pointer, Paint()..color = AppColors.primary);
-
-    textPainter.paint(
-      canvas,
-      Offset((width - textPainter.width) / 2, (height - textPainter.height) / 2),
-    );
-
-    final picture = recorder.endRecording();
-    final image = await picture.toImage(
-      (width * pixelRatio).ceil(),
-      (height * pixelRatio + 8 * pixelRatio).ceil(),
-    );
-    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-    picture.dispose();
-    image.dispose();
-
-    if (bytes == null) return BitmapDescriptor.defaultMarker;
-    return BitmapDescriptor.bytes(
-      bytes.buffer.asUint8List(),
-      width: width,
-      height: height + 8,
-    );
-  }
-
-  @override
-  void dispose() {
-    _mapController?.dispose();
-    super.dispose();
   }
 
   @override
@@ -250,20 +206,39 @@ class _InteractiveMapViewState extends State<InteractiveMapView> {
       ),
       child: Stack(
         children: [
-          GoogleMap(
-            initialCameraPosition: const CameraPosition(
-              target: _harareCbd,
-              zoom: 12.5,
+          FlutterMap(
+            options: const MapOptions(
+              initialCenter: _harareCbd,
+              initialZoom: 12.5,
             ),
-            style: GoogleMapStyle.lightSilver,
-            markers: _markers.values.toSet(),
-            myLocationButtonEnabled: false,
-            zoomControlsEnabled: false,
-            compassEnabled: false,
-            mapToolbarEnabled: false,
-            onMapCreated: (controller) {
-              _mapController = controller;
-            },
+            children: [
+              TileLayer(
+                urlTemplate:
+                    'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                subdomains: const ['a', 'b', 'c', 'd'],
+                userAgentPackageName: 'com.example.madeals',
+              ),
+              MarkerLayer(
+                markers: widget.listings
+                    .map(
+                      (item) => Marker(
+                        point: LatLng(item.latitude, item.longitude),
+                        width: 90,
+                        height: 46,
+                        alignment: Alignment.topCenter,
+                        child: _buildPricePin(item),
+                      ),
+                    )
+                    .toList(),
+              ),
+              const RichAttributionWidget(
+                attributions: [
+                  TextSourceAttribution(
+                    '© OpenStreetMap contributors © CARTO',
+                  ),
+                ],
+              ),
+            ],
           ),
           Positioned(
             top: 10,
@@ -317,4 +292,24 @@ class _InteractiveMapViewState extends State<InteractiveMapView> {
       ),
     );
   }
+}
+
+class _PinTailPainter extends CustomPainter {
+  final Color color;
+
+  _PinTailPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = ui.Path()
+      ..moveTo(0, 0)
+      ..lineTo(size.width / 2, size.height)
+      ..lineTo(size.width, 0)
+      ..close();
+    canvas.drawPath(path, Paint()..color = color);
+  }
+
+  @override
+  bool shouldRepaint(covariant _PinTailPainter oldDelegate) =>
+      oldDelegate.color != color;
 }

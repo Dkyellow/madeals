@@ -12,10 +12,6 @@
         android:label="MADEALS"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-        <!-- Google Maps API key (Maps SDK for Android) -->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDS9t7sCpIMXAM0NnCPUdhh4F3p_RBAFpQ"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
