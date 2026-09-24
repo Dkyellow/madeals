@@ -80,7 +80,7 @@ class _PostDealScreenState extends ConsumerState<PostDealScreen> {
     }
   }
 
-  void _submitListing() {
+  Future<void> _submitListing() async {
     final title = _titleController.text.trim().isEmpty
         ? 'Featured Deal in Harare'
         : _titleController.text.trim();
@@ -89,10 +89,15 @@ class _PostDealScreenState extends ConsumerState<PostDealScreen> {
     const uuid = Uuid();
     final newId = 'deal_${uuid.v4().substring(0, 8)}';
 
-    final defaultSampleImages = [
-      'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=800&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&auto=format&fit=crop&q=80',
-    ];
+    // Use locally picked photos (persisted with the SQLite row),
+    // falling back to placeholder images when none were selected.
+    final List<String> imagePaths = _pickedImages.map((img) => img.path).toList();
+    final images = imagePaths.isNotEmpty
+        ? imagePaths
+        : [
+            'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=800&auto=format&fit=crop&q=80',
+            'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&auto=format&fit=crop&q=80',
+          ];
 
     final newListing = ListingItem(
       id: newId,
@@ -104,7 +109,7 @@ class _PostDealScreenState extends ConsumerState<PostDealScreen> {
       isVerified: true,
       isFeatured: true,
       isNegotiable: _isNegotiable,
-      images: defaultSampleImages,
+      images: images,
       specs: {
         'Condition': _conditionController.text.trim(),
         'Location': _locationController.text.trim(),
@@ -129,7 +134,9 @@ class _PostDealScreenState extends ConsumerState<PostDealScreen> {
       tags: ['New', 'Direct Seller', 'Harare Deal'],
     );
 
-    ref.read(listingsProvider.notifier).addListing(newListing);
+    // Persist to SQLite (`madeals.db`) then surface at the top of the feed.
+    await ref.read(listingsProvider.notifier).addListing(newListing);
+    if (!mounted) return;
     context.go('/home');
 
     ScaffoldMessenger.of(context).showSnackBar(

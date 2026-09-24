@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../core/constants/google_map_style.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../models/listing_item.dart';
@@ -687,6 +689,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   }
 
   Widget _buildMeetupLocationCard(ListingItem item) {
+    final meetupLatLng = LatLng(item.latitude, item.longitude);
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -730,6 +734,34 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 12),
+          // Meetup Location Mini-Map
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: SizedBox(
+              height: 140,
+              width: double.infinity,
+              child: GoogleMap(
+                initialCameraPosition: CameraPosition(
+                  target: meetupLatLng,
+                  zoom: 15,
+                ),
+                style: GoogleMapStyle.lightSilver,
+                markers: {
+                  Marker(
+                    markerId: const MarkerId('meetup_spot'),
+                    position: meetupLatLng,
+                  ),
+                },
+                zoomControlsEnabled: false,
+                scrollGesturesEnabled: false,
+                rotateGesturesEnabled: false,
+                tiltGesturesEnabled: false,
+                myLocationButtonEnabled: false,
+                compassEnabled: false,
+              ),
+            ),
           ),
         ],
       ),

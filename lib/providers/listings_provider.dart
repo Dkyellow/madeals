@@ -1,21 +1,35 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../core/db/database_helper.dart';
 import '../models/listing_item.dart';
-import '../repositories/listing_repository.dart';
+
+/// Seed loaded once at startup (after SQLite init) — overrides in `main()`.
+final initialListingsProvider = Provider<List<ListingItem>>((ref) => const []);
 
 class ListingsNotifier extends StateNotifier<List<ListingItem>> {
-  ListingsNotifier() : super(ListingRepository.getInitialListings());
+  ListingsNotifier(super.initialListings);
 
-  void addListing(ListingItem newItem) {
+  Future<void> addListing(ListingItem newItem) async {
     state = [newItem, ...state];
+    await DatabaseHelper.instance.insertListing(newItem);
   }
 
-  void toggleBookmark(String id) {
+  Future<void> toggleBookmark(String id) async {
+    bool? nowBookmarked;
     state = state.map((item) {
       if (item.id == id) {
-        return item.copyWith(isBookmarked: !item.isBookmarked);
+        nowBookmarked = !item.isBookmarked;
+        return item.copyWith(isBookmarked: nowBookmarked);
       }
       return item;
     }).toList();
+    if (nowBookmarked != null) {
+      await DatabaseHelper.instance.updateBookmark(id, nowBookmarked!);
+    }
+  }
+
+  /// Re-reads all active listings from SQLite (source of truth).
+  Future<void> refreshFromDb() async {
+    state = await DatabaseHelper.instance.getListings();
   }
 
   ListingItem? getListingById(String id) {
@@ -27,9 +41,10 @@ class ListingsNotifier extends StateNotifier<List<ListingItem>> {
   }
 }
 
-// Core Listings State Provider
-final listingsProvider = StateNotifierProvider<ListingsNotifier, List<ListingItem>>((ref) {
-  return ListingsNotifier();
+// Core Listings State Provider (backed by SQLite `madeals.db`)
+final listingsProvider =
+    StateNotifierProvider<ListingsNotifier, List<ListingItem>>((ref) {
+  return ListingsNotifier(ref.watch(initialListingsProvider));
 });
 
 // App State Filter Providers
@@ -41,6 +56,7 @@ final isVerifiedOnlyProvider = StateProvider<bool>((ref) => false);
 final isMapViewProvider = StateProvider<bool>((ref) => true);
 
 // Combined Filtered Listings Provider
+// (data originates from SQLite; filters run in-memory for instant UI)
 final filteredListingsProvider = Provider<List<ListingItem>>((ref) {
   final listings = ref.watch(listingsProvider);
   final query = ref.watch(searchQueryProvider).trim().toLowerCase();

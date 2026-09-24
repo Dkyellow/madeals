@@ -8,6 +8,19 @@
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
 	<string>Madeals</string>
+	<key>NSCameraUsageDescription</key>
+	<string>MADEALS uses the camera so you can take photos of items you are selling.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>MADEALS needs access to your photo library so you can attach listing photos.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>MADEALS saves listing photos you capture with the camera.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>MADEALS uses your location to show nearby deals and meetup spots.</string>
+	<key>GMSServices</key>
+	<array>
+		<!-- TODO: Replace with your Google Maps iOS API key (Google Cloud Console → Maps SDK for iOS) -->
+		<string>YOUR_GOOGLE_MAPS_API_KEY</string>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

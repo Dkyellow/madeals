@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
@@ -19,35 +22,48 @@ class SafeNetworkImage extends StatelessWidget {
     this.fallbackWidget,
   });
 
+  bool get _isLocalFile =>
+      !kIsWeb && !imageUrl.startsWith('http://') && !imageUrl.startsWith('https://');
+
   @override
   Widget build(BuildContext context) {
-    Widget image = Image.network(
-      imageUrl,
-      width: width,
-      height: height,
-      fit: fit,
-      errorBuilder: (context, error, stackTrace) {
-        return fallbackWidget ?? _buildDefaultFallback();
-      },
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
-        return Container(
-          width: width,
-          height: height,
-          color: AppColors.surfaceVariant,
-          child: Center(
-            child: SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: AppColors.primary.withValues(alpha: 0.5),
-              ),
-            ),
-          ),
-        );
-      },
-    );
+    Widget image = _isLocalFile
+        ? Image.file(
+            File(imageUrl),
+            width: width,
+            height: height,
+            fit: fit,
+            errorBuilder: (context, error, stackTrace) {
+              return fallbackWidget ?? _buildDefaultFallback();
+            },
+          )
+        : Image.network(
+            imageUrl,
+            width: width,
+            height: height,
+            fit: fit,
+            errorBuilder: (context, error, stackTrace) {
+              return fallbackWidget ?? _buildDefaultFallback();
+            },
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Container(
+                width: width,
+                height: height,
+                color: AppColors.surfaceVariant,
+                child: Center(
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.primary.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
 
     if (borderRadius != null) {
       return ClipRRect(

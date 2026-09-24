@@ -29,7 +29,23 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
     'Property',
   ];
 
+  late final TextEditingController _searchController;
+
   String _currentLocation = 'Harare, ZW';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController(
+      text: ref.read(searchQueryProvider),
+    );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   void _showLocationPicker() {
     final locations = [
@@ -141,6 +157,10 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
               onProfileTap: () => context.push('/profile'),
               onSearchTap: () => context.push('/search'),
               onFilterTap: () => context.push('/search'),
+              searchController: _searchController,
+              onSearchChanged: (val) {
+                ref.read(searchQueryProvider.notifier).state = val;
+              },
             ),
             // Horizontal Category Chips Bar
             Container(
@@ -172,7 +192,7 @@ class _HomeFeedScreenState extends ConsumerState<HomeFeedScreen> {
               child: RefreshIndicator(
                 color: AppColors.primary,
                 onRefresh: () async {
-                  await Future.delayed(const Duration(milliseconds: 500));
+                  await ref.read(listingsProvider.notifier).refreshFromDb();
                 },
                 child: ListView(
                   physics: const BouncingScrollPhysics(),

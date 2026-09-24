@@ -14,14 +14,14 @@ class AppColors {
   static const Color zimGold = Color(0xFFF59E0B);
 
   // Surfaces & Backgrounds
-  static const Color background = Color(0xFFF7F9FC);
+  static const Color background = Color(0xFFF5F5F5);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color surfaceDark = Color(0xFF0F172A);
   static const Color surfaceCard = Color(0xFFFFFFFF);
   static const Color surfaceVariant = Color(0xFFF1F5F9);
 
   // Dark Elements & Text
-  static const Color textPrimary = Color(0xFF0F172A);
+  static const Color textPrimary = Color(0xFF111111);
   static const Color textSecondary = Color(0xFF64748B);
   static const Color textMuted = Color(0xFF94A3B8);
   static const Color textLight = Color(0xFFF8FAFC);

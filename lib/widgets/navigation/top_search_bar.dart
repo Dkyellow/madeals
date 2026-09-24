@@ -13,6 +13,11 @@ class TopSearchBar extends StatelessWidget {
   final VoidCallback onSearchTap;
   final VoidCallback onFilterTap;
 
+  /// Real-time search: typed text is pushed through [onSearchChanged]
+  /// so the feed can re-query the local SQLite-backed listings.
+  final TextEditingController? searchController;
+  final ValueChanged<String>? onSearchChanged;
+
   const TopSearchBar({
     super.key,
     required this.location,
@@ -22,6 +27,8 @@ class TopSearchBar extends StatelessWidget {
     required this.onProfileTap,
     required this.onSearchTap,
     required this.onFilterTap,
+    this.searchController,
+    this.onSearchChanged,
   });
 
   @override
@@ -126,33 +133,73 @@ class TopSearchBar extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          // Search Bar Input Field
-          GestureDetector(
-            onTap: onSearchTap,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: AppColors.surfaceVariant,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.border),
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.search_rounded,
-                    color: AppColors.textMuted,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      'Search vehicles, phones, services...',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.textMuted,
-                        fontSize: 13.5,
-                      ),
+          // Search Bar Input Field (real-time local query when wired)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceVariant,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.search_rounded,
+                  color: AppColors.textMuted,
+                  size: 20,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: searchController != null
+                      ? TextField(
+                          controller: searchController,
+                          textInputAction: TextInputAction.search,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: AppColors.textPrimary,
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'Search vehicles, phones, services...',
+                            hintStyle: AppTextStyles.bodyMedium.copyWith(
+                              color: AppColors.textMuted,
+                              fontSize: 13.5,
+                            ),
+                            isDense: true,
+                            contentPadding:
+                                const EdgeInsets.symmetric(vertical: 10),
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                          ),
+                          onChanged: onSearchChanged,
+                        )
+                      : GestureDetector(
+                          onTap: onSearchTap,
+                          child: Text(
+                            'Search vehicles, phones, services...',
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: AppColors.textMuted,
+                              fontSize: 13.5,
+                            ),
+                          ),
+                        ),
+                ),
+                if (searchController != null &&
+                    searchController!.text.isNotEmpty)
+                  GestureDetector(
+                    onTap: () {
+                      searchController!.clear();
+                      onSearchChanged?.call('');
+                    },
+                    child: const Icon(
+                      Icons.close_rounded,
+                      color: AppColors.textMuted,
+                      size: 16,
                     ),
-                  ),
+                  )
+                else ...[
+                  const SizedBox(width: 4),
                   GestureDetector(
                     onTap: onFilterTap,
                     child: Container(
@@ -170,7 +217,7 @@ class TopSearchBar extends StatelessWidget {
                     ),
                   ),
                 ],
-              ),
+              ],
             ),
           ),
         ],
