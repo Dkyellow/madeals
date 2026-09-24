@@ -35,8 +35,11 @@ $where  = [];
 $params = [];
 
 if ($q !== '') {
-    $where[] = '(display_name LIKE :q OR phone LIKE :q OR region LIKE :q)';
-    $params[':q'] = '%' . $q . '%';
+    $where[] = '(display_name LIKE :q1 OR phone LIKE :q2 OR region LIKE :q3)';
+    $like    = '%' . $q . '%';
+    $params[':q1'] = $like;
+    $params[':q2'] = $like;
+    $params[':q3'] = $like;
 }
 if ($vStatus !== '') {
     $where[] = 'verification_status = :vstatus';

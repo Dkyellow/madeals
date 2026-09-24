@@ -37,10 +37,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = db()->prepare(
                 'SELECT id, username, password_hash, is_active
                  FROM admin_users
-                 WHERE username = :u OR email = :u
+                 WHERE username = :username OR email = :email
                  LIMIT 1'
             );
-            $stmt->execute([':u' => $username]);
+            $stmt->execute([':username' => $username, ':email' => $username]);
             $admin = $stmt->fetch();
 
             if (!$admin || (int)$admin['is_active'] !== 1 || !password_verify($password, $admin['password_hash'])) {

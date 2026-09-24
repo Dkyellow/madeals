@@ -72,8 +72,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $params[':category'] = $category;
     }
     if ($q !== '') {
-        $where[] = '(title LIKE :q OR location LIKE :q OR description LIKE :q)';
-        $params[':q'] = '%' . $q . '%';
+        $where[] = '(title LIKE :q1 OR location LIKE :q2 OR description LIKE :q3)';
+        $like    = '%' . $q . '%';
+        $params[':q1'] = $like;
+        $params[':q2'] = $like;
+        $params[':q3'] = $like;
     }
 
     $whereSql = ' WHERE ' . implode(' AND ', $where);

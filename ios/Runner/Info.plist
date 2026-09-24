@@ -18,8 +18,8 @@
 	<string>MADEALS uses your location to show nearby deals and meetup spots.</string>
 	<key>GMSServices</key>
 	<array>
-		<!-- TODO: Replace with your Google Maps iOS API key (Google Cloud Console → Maps SDK for iOS) -->
-		<string>YOUR_GOOGLE_MAPS_API_KEY</string>
+		<!-- Google Maps API key (Maps SDK for iOS) -->
+		<string>AIzaSyDS9t7sCpIMXAM0NnCPUdhh4F3p_RBAFpQ</string>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>

@@ -38,8 +38,12 @@ $where  = [];
 $params = [];
 
 if ($q !== '') {
-    $where[] = '(title LIKE :q OR location LIKE :q OR seller_phone LIKE :q OR id LIKE :q)';
-    $params[':q'] = '%' . $q . '%';
+    $where[] = '(title LIKE :q1 OR location LIKE :q2 OR seller_phone LIKE :q3 OR id LIKE :q4)';
+    $like    = '%' . $q . '%';
+    $params[':q1'] = $like;
+    $params[':q2'] = $like;
+    $params[':q3'] = $like;
+    $params[':q4'] = $like;
 }
 if ($status !== '') {
     $where[] = 'status = :status';

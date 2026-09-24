@@ -23,8 +23,11 @@ $where  = [];
 $params = [];
 
 if ($q !== '') {
-    $where[] = '(a.target_id LIKE :q OR a.reason LIKE :q OR a.ip_address LIKE :q)';
-    $params[':q'] = '%' . $q . '%';
+    $where[] = '(a.target_id LIKE :q1 OR a.reason LIKE :q2 OR a.ip_address LIKE :q3)';
+    $like    = '%' . $q . '%';
+    $params[':q1'] = $like;
+    $params[':q2'] = $like;
+    $params[':q3'] = $like;
 }
 if ($action !== '') {
     $where[] = 'a.action = :action';
