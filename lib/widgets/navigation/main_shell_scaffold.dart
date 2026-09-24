@@ -30,27 +30,34 @@ class MainShellScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final onSellScreen =
-        location.startsWith('/sell') || location.startsWith('/post-deal');
+    // Hide the Sell FAB where it would collide with the screen's actions:
+    // the sell/post flow itself, and chat rooms (send button at bottom).
+    final hideFab = location.startsWith('/sell') ||
+        location.startsWith('/post-deal') ||
+        location.startsWith('/chat');
 
     return Scaffold(
       body: child,
       // Floating "Sell" action button (replaces the old nav-bar pill)
-      floatingActionButton: onSellScreen
+      floatingActionButton: hideFab
           ? null
-          : FloatingActionButton.extended(
-              onPressed: () {
-                context.push('/sell');
-              },
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              elevation: 4,
-              icon: const Icon(Icons.add_rounded, size: 22),
-              label: Text(
-                'Sell',
-                style: AppTextStyles.labelLarge.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
+          : Padding(
+              // Lift above any bottom input bars (e.g. chat send row)
+              padding: const EdgeInsets.only(bottom: 12),
+              child: FloatingActionButton.extended(
+                onPressed: () {
+                  context.push('/sell');
+                },
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                elevation: 4,
+                icon: const Icon(Icons.add_rounded, size: 22),
+                label: Text(
+                  'Sell',
+                  style: AppTextStyles.labelLarge.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
             ),
