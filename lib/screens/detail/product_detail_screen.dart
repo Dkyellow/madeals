@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/animations/micro_interactions.dart';
-import '../../core/constants/map_theme.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../models/listing_item.dart';
@@ -786,12 +785,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   interactionOptions: const InteractionOptions(flags: 0),
                 ),
                 children: [
-                  ColorFiltered(
-                    colorFilter: MapTheme.appThemeFilter,
-                    child: TileLayer(
-                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'com.example.madeals',
-                    ),
+                  // CARTO Positron — plain light style (no house numbers)
+                  TileLayer(
+                    urlTemplate:
+                        'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+                    subdomains: const ['a', 'b', 'c', 'd'],
+                    userAgentPackageName: 'com.madeals.app',
                   ),
                   MarkerLayer(
                     markers: [

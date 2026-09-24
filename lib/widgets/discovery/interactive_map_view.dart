@@ -3,13 +3,13 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import '../../core/constants/map_theme.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../models/listing_item.dart';
 
-/// Free flutter_map discovery view centered on Harare CBD (-17.8252, 31.0335)
-/// using light-silver CartoDB Positron tiles (#F5F5F5-style minimalist palette)
+/// Plain, Google-Maps-like discovery view centered on Harare CBD
+/// (-17.8252, 31.0335) using CARTO Positron tiles — minimal detail,
+/// no house numbers or building clutter.
 /// with interactive price pins. Tapping a pin opens an in-map bottom sheet
 /// previewing the listing.
 class InteractiveMapView extends StatefulWidget {
@@ -223,14 +223,13 @@ class _InteractiveMapViewState extends State<InteractiveMapView> {
               initialZoom: 12.5,
             ),
             children: [
-              // Free OSM tiles, color-filtered to the MADEALS app theme
-              // (light silver #F5F5F5 land, cool-blue water) — no API key.
-              ColorFiltered(
-                colorFilter: MapTheme.appThemeFilter,
-                child: TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.example.madeals',
-                ),
+              // CARTO Positron — plain, Google-Maps-like light style:
+              // no house numbers, no building clutter, subtle labels.
+              TileLayer(
+                urlTemplate:
+                    'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+                subdomains: const ['a', 'b', 'c', 'd'],
+                userAgentPackageName: 'com.madeals.app',
               ),
               MarkerLayer(
                 markers: widget.listings
