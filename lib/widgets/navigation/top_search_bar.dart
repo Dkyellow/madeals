@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../common/app_logo.dart';
-import '../common/network_image_fallback.dart';
 
 class TopSearchBar extends StatelessWidget {
   final String location;
-  final String avatarUrl;
   final VoidCallback onLocationTap;
   final VoidCallback onNotificationTap;
-  final VoidCallback onProfileTap;
   final VoidCallback onSearchTap;
   final VoidCallback onFilterTap;
 
@@ -21,10 +18,8 @@ class TopSearchBar extends StatelessWidget {
   const TopSearchBar({
     super.key,
     required this.location,
-    required this.avatarUrl,
     required this.onLocationTap,
     required this.onNotificationTap,
-    required this.onProfileTap,
     required this.onSearchTap,
     required this.onFilterTap,
     this.searchController,
@@ -37,22 +32,23 @@ class TopSearchBar extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
       decoration: const BoxDecoration(
         color: Colors.white,
-        border: Border(
-          bottom: BorderSide(color: AppColors.border, width: 1),
-        ),
+        border: Border(bottom: BorderSide(color: AppColors.border, width: 1)),
       ),
       child: Column(
         children: [
-          // Top Row: Logo, Location picker, Notifications, Profile
+          // Top Row: Logo, Location picker, Notifications
           Row(
             children: [
-              const AppLogo(fontSize: 20),
+              const AppLogo(fontSize: 19),
               const Spacer(),
               // Location Dropdown button
               GestureDetector(
                 onTap: onLocationTap,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.surfaceVariant,
                     borderRadius: BorderRadius.circular(20),
@@ -119,17 +115,6 @@ class TopSearchBar extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
-              // Profile Avatar
-              GestureDetector(
-                onTap: onProfileTap,
-                child: SafeNetworkImage(
-                  imageUrl: avatarUrl,
-                  width: 36,
-                  height: 36,
-                  borderRadius: BorderRadius.circular(18),
-                ),
-              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -166,8 +151,9 @@ class TopSearchBar extends StatelessWidget {
                               fontSize: 13.5,
                             ),
                             isDense: true,
-                            contentPadding:
-                                const EdgeInsets.symmetric(vertical: 10),
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 10,
+                            ),
                             border: InputBorder.none,
                             enabledBorder: InputBorder.none,
                             focusedBorder: InputBorder.none,
