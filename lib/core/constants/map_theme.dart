@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
 /// Tile styling that matches the MADEALS app theme:
-/// - Land/background → cool light silver (close to #F5F5F5)
-/// - Water → soft blue tint (primaryLight family)
-/// - Greens/parks → muted, desaturated
-/// - Labels → kept dark (#111-style) for readability
+/// - Land/roads → bright cool silver (≈ #EFF4F6, sits on the #F5F5F5 UI)
+/// - Greens/parks → muted gray
+/// - Water → soft blue-gray
+/// - Labels → kept dark for readability
+/// - Price pins (drawn outside this filter) stay vivid #0062D2
 ///
 /// Applied over free OpenStreetMap tiles — no API key required.
 class MapTheme {
+  /// Heavy 85% desaturation + lift toward the app's silver palette.
   static const ColorFilter appThemeFilter = ColorFilter.matrix(<double>[
-    0.633, 0.315, 0.032, 0, 4, // R: 55% desaturation + slight lift
-    0.096, 0.872, 0.032, 0, 4, // G
-    0.098, 0.328, 0.594, 0, 7, // B: cool blue-silver bias
+    0.321, 0.590, 0.059, 0, 8, // R
+    0.179, 0.750, 0.060, 0, 8, // G
+    0.192, 0.644, 0.224, 0, 12, // B: gentle icy-blue cast
     0, 0, 0, 1, 0, // A
   ]);
 }
