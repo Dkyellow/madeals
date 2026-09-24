@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/animations/micro_interactions.dart';
+import '../../core/constants/map_config.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../models/listing_item.dart';
@@ -772,7 +773,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          // Meetup Location Mini-Map (free flutter_map / CartoDB light tiles)
+          // Meetup Location Mini-Map (plain light tiles — MapTiler/Esri)
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: SizedBox(
@@ -785,17 +786,16 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   interactionOptions: const InteractionOptions(flags: 0),
                 ),
                 children: [
-                  // Esri Light Gray Canvas — plain light style (no house numbers)
+                  // Plain Google-Maps-like tiles (MapTiler / Esri fallback)
                   TileLayer(
-                    urlTemplate:
-                        'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+                    urlTemplate: MapTiles.urlTemplate,
                     userAgentPackageName: 'com.madeals.app',
                   ),
-                  TileLayer(
-                    urlTemplate:
-                        'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
-                    userAgentPackageName: 'com.madeals.app',
-                  ),
+                  if (MapTiles.showReferenceOverlay)
+                    TileLayer(
+                      urlTemplate: MapTiles.referenceUrlTemplate,
+                      userAgentPackageName: 'com.madeals.app',
+                    ),
                   MarkerLayer(
                     markers: [
                       Marker(
@@ -810,10 +810,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       ),
                     ],
                   ),
-                  const RichAttributionWidget(
+                  RichAttributionWidget(
                     alignment: AttributionAlignment.bottomLeft,
                     attributions: [
-                      TextSourceAttribution('© Esri, HERE, Garmin'),
+                      TextSourceAttribution(MapTiles.attribution),
                     ],
                   ),
                 ],

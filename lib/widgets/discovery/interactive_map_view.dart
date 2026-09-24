@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import '../../core/constants/map_config.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../models/listing_item.dart';
@@ -223,20 +224,17 @@ class _InteractiveMapViewState extends State<InteractiveMapView> {
               initialZoom: 12.5,
             ),
             children: [
-              // Esri Light Gray Canvas — plain, Google-Maps-like base:
-              // no house numbers, no building clutter, minimal styling.
-              // (URL order is {z}/{y}/{x} for ArcGIS tile services.)
+              // Plain, Google-Maps-like tiles: MapTiler basic-v2 when a key
+              // is configured, keyless Esri Light Gray Canvas as fallback.
               TileLayer(
-                urlTemplate:
-                    'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+                urlTemplate: MapTiles.urlTemplate,
                 userAgentPackageName: 'com.madeals.app',
               ),
-              // Street-name reference overlay (labels only, still plain)
-              TileLayer(
-                urlTemplate:
-                    'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
-                userAgentPackageName: 'com.madeals.app',
-              ),
+              if (MapTiles.showReferenceOverlay)
+                TileLayer(
+                  urlTemplate: MapTiles.referenceUrlTemplate,
+                  userAgentPackageName: 'com.madeals.app',
+                ),
               MarkerLayer(
                 markers: widget.listings
                     .map(
@@ -250,13 +248,11 @@ class _InteractiveMapViewState extends State<InteractiveMapView> {
                     )
                     .toList(),
               ),
-              const RichAttributionWidget(
+              RichAttributionWidget(
                 alignment: AttributionAlignment.bottomLeft,
-                popupInitialDisplayDuration: Duration(seconds: 5),
+                popupInitialDisplayDuration: const Duration(seconds: 5),
                 attributions: [
-                  TextSourceAttribution(
-                    '© Esri, HERE, Garmin, NGA, USGS',
-                  ),
+                  TextSourceAttribution(MapTiles.attribution),
                 ],
               ),
             ],
