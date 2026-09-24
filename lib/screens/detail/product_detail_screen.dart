@@ -4,6 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../core/constants/map_theme.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../models/listing_item.dart';
@@ -750,12 +751,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 ),
                 children: [
                   ColorFiltered(
-                    colorFilter: const ColorFilter.matrix(<double>[
-                      0.464, 0.378, 0.038, 0, 28, // R: desaturate + lift
-                      0.112, 0.703, 0.038, 0, 28, // G
-                      0.112, 0.378, 0.399, 0, 28, // B
-                      0, 0, 0, 1, 0, // A
-                    ]),
+                    colorFilter: MapTheme.appThemeFilter,
                     child: TileLayer(
                       urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                       userAgentPackageName: 'com.example.madeals',

@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import '../../core/constants/map_theme.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../models/listing_item.dart';
@@ -212,15 +213,10 @@ class _InteractiveMapViewState extends State<InteractiveMapView> {
               initialZoom: 12.5,
             ),
             children: [
-              // Free OSM tiles, color-filtered to the light-silver
-              // MADEALS palette (#F5F5F5) — no API key required.
+              // Free OSM tiles, color-filtered to the MADEALS app theme
+              // (light silver #F5F5F5 land, cool-blue water) — no API key.
               ColorFiltered(
-                colorFilter: const ColorFilter.matrix(<double>[
-                  0.464, 0.378, 0.038, 0, 28, // R: desaturate + lift
-                  0.112, 0.703, 0.038, 0, 28, // G
-                  0.112, 0.378, 0.399, 0, 28, // B
-                  0, 0, 0, 1, 0, // A
-                ]),
+                colorFilter: MapTheme.appThemeFilter,
                 child: TileLayer(
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.example.madeals',
