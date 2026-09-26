@@ -786,15 +786,23 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   interactionOptions: const InteractionOptions(flags: 0),
                 ),
                 children: [
-                  // Plain Google-Maps-like tiles (MapTiler / Esri fallback)
+                  // Plain light-gray basemap + street-label overlay (Esri)
                   TileLayer(
                     urlTemplate: MapTiles.urlTemplate,
                     userAgentPackageName: 'com.madeals.app',
+                    maxNativeZoom: MapTiles.maxNativeZoom,
                   ),
                   if (MapTiles.showReferenceOverlay)
                     TileLayer(
                       urlTemplate: MapTiles.referenceUrlTemplate,
                       userAgentPackageName: 'com.madeals.app',
+                      maxNativeZoom: MapTiles.maxNativeZoom,
+                    ),
+                  if (MapTiles.showPlacesOverlay)
+                    TileLayer(
+                      urlTemplate: MapTiles.placesUrlTemplate,
+                      userAgentPackageName: 'com.madeals.app',
+                      maxNativeZoom: MapTiles.maxNativeZoom,
                     ),
                   MarkerLayer(
                     markers: [

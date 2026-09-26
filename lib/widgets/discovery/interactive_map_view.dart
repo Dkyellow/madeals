@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import '../../core/constants/map_config.dart';
 import '../../core/theme/app_colors.dart';
@@ -9,8 +10,8 @@ import '../../core/theme/app_text_styles.dart';
 import '../../models/listing_item.dart';
 
 /// Plain, Google-Maps-like discovery view centered on Harare CBD
-/// (-17.8252, 31.0335) using CARTO Positron tiles — minimal detail,
-/// no house numbers or building clutter.
+/// (-17.8252, 31.0335) using Esri Light Gray Canvas tiles — uniform gray,
+/// no green/beige landuse, no transit lines, street labels only.
 /// with interactive price pins. Tapping a pin opens an in-map bottom sheet
 /// previewing the listing.
 class InteractiveMapView extends StatefulWidget {
@@ -37,8 +38,47 @@ class InteractiveMapView extends StatefulWidget {
 
 class _InteractiveMapViewState extends State<InteractiveMapView> {
   static const LatLng _harareCbd = LatLng(-17.8252, 31.0335);
+  static const double _userZoom = 14;
+
+  final MapController _mapController = MapController();
 
   String? selectedListingId;
+  bool _focusedOnUser = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _focusOnUserLocation());
+  }
+
+  /// Open the map centered on the device location (falls back to Harare CBD).
+  Future<void> _focusOnUserLocation() async {
+    if (_focusedOnUser || !mounted) return;
+    _focusedOnUser = true;
+    try {
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        return;
+      }
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+          timeLimit: Duration(seconds: 4),
+        ),
+      ).timeout(const Duration(seconds: 5));
+      if (!mounted) return;
+      _mapController.move(
+        LatLng(position.latitude, position.longitude),
+        _userZoom,
+      );
+    } catch (_) {
+      // Timeout / service disabled — keep the Harare CBD default.
+    }
+  }
 
   void _onPinTapped(ListingItem item) {
     setState(() => selectedListingId = item.id);
@@ -219,21 +259,29 @@ class _InteractiveMapViewState extends State<InteractiveMapView> {
       child: Stack(
         children: [
           FlutterMap(
+            mapController: _mapController,
             options: const MapOptions(
               initialCenter: _harareCbd,
               initialZoom: 12.5,
             ),
             children: [
-              // Plain, Google-Maps-like tiles: MapTiler basic-v2 when a key
-              // is configured, keyless Esri Light Gray Canvas as fallback.
+              // Plain light-gray basemap (Esri) + street + place-label overlays.
               TileLayer(
                 urlTemplate: MapTiles.urlTemplate,
                 userAgentPackageName: 'com.madeals.app',
+                maxNativeZoom: MapTiles.maxNativeZoom,
               ),
               if (MapTiles.showReferenceOverlay)
                 TileLayer(
                   urlTemplate: MapTiles.referenceUrlTemplate,
                   userAgentPackageName: 'com.madeals.app',
+                  maxNativeZoom: MapTiles.maxNativeZoom,
+                ),
+              if (MapTiles.showPlacesOverlay)
+                TileLayer(
+                  urlTemplate: MapTiles.placesUrlTemplate,
+                  userAgentPackageName: 'com.madeals.app',
+                  maxNativeZoom: MapTiles.maxNativeZoom,
                 ),
               MarkerLayer(
                 markers: widget.listings
